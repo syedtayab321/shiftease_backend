@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .email-container {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            color: #fff;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .button.reject {
+            background-color: #dc3545;
+        }
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">New Service Provider Signup</div>
+        <p><strong>Email:</strong> {{ email }}</p>
+        <p><strong>Company Name:</strong> {{ company_name }}</p>
+        <p><strong>Location:</strong> {{ location }}</p>
+        <p><strong>Services:</strong> {{ services }}</p>
+        <p><strong>Mobile Number:</strong> {{ mobile_no }}</p>
+        <p><strong>Zip Code:</strong> {{ zipcode }}</p>
+
+        <a href="{{ accept_url }}" class="button">Accept</a>
+        <a href="{{ reject_url }}" class="button reject">Reject</a>
+    </div>
+</body>
+</html>
