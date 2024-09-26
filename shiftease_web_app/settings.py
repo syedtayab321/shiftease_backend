@@ -25,12 +25,14 @@ SECRET_KEY = 'django-insecure-xh&9q@axu)b^9dcv*g@j6^6hr(&q*+#u7pp9o%tj6+e*$mman6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-]
+ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001", # Your frontend URL
+    'http://localhost:3000',  # React app (localhost for development)
+    'http://localhost:8000',  # Flutter app (if using web)
+    'http://10.0.2.2:8000',  # For Android emulators in Flutter
+    'http://192.168.18.2:8000',
+    'http://192.168.1.110:8000',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 # Application definition

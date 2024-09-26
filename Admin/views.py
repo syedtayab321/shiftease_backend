@@ -1,18 +1,29 @@
 import logging
 from django.core.mail import send_mail
+from django.core.serializers import serialize
+
+from Admin.models import Users
 from serviceproviders.models import ServiceProviders
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from serviceproviders.serializers import ServiceProvidersSerializer,AccountApprovalSerializer
+from serviceproviders.serializers import ServiceProvidersSerializer, AccountApprovalSerializer
+from Admin.serializer import UserSerializer
 from rest_framework import status
-@api_view(['GET'])
+@api_view(['GET','POST','PUT','DELETE'])
 def UserData(request):
-    try:
-        userdata=ServiceProviders.objects.all()
-        serializer = ServiceProvidersSerializer(userdata, many=True)
-        return Response(serializer.data)
-    except Exception as e:
-        return Response('No Data Found')
+    if request.method == 'GET':
+        try:
+            userdata = ServiceProviders.objects.all()
+            serializer = ServiceProvidersSerializer(userdata, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response('No Data Found')
+    elif request.method == 'DELETE':
+        try:
+            userdata = ServiceProviders.objects.filter(id=request.GET['id']).delete()
+            return Response('UserData Deleted Sucessfully')
+        except Exception as e:
+            return Response('No Data Found')
 
 
 logger = logging.getLogger(__name__)
@@ -48,3 +59,27 @@ def AccountApproval(request):
     else:
         logger.warning(f'Serializer errors: {serializer.errors}')
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST','GET','PUT','DELETE'])
+def SignUpUsers(request):
+    if request.method == 'POST':
+        print("Incoming data:", request.data)
+        try:
+            # Try to serialize the incoming data
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()  # Save the user data
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method == 'GET':
+        try:
+            Userdata = Users.objects.all()
+            serializerdata = UserSerializer(Userdata, many=True)
+            return Response(serializerdata.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({"message": "Invalid method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

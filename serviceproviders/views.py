@@ -133,8 +133,12 @@ def PackagesData(request):
                return Response(serializer.data)
            elif id:
                packagedata = PackagesModel.objects.get(id=id)
-               serializer = PackageSerializer(packagedata)
+               serializer = PackageSerializer(packagedata,many=True)
                return Response(serializer.data)
+           else:
+               packagedata = PackagesModel.objects.all()
+               serializer = PackageSerializer(packagedata,many=True)
+               return Response(serializer.data,status=status.HTTP_200_OK)
        except PackagesModel.DoesNotExist:
             return Response({'error': 'Data not found'}, status=404)
 
