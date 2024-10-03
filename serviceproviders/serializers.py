@@ -14,7 +14,7 @@ class AccountApprovalSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceProviders
-        fields = ['company_name', 'email', 'password', 'service', 'location']
+        fields = '__all__'
 
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -9,14 +9,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 def Providersignup(request):
     serializer = ServiceProvidersSerializer(data=request.data)
     if serializer.is_valid():
-        # Extract the email from the validated data
         email = serializer.validated_data.get('email')
-
-        # Check if the email already exists in the database
         if ServiceProviders.objects.filter(email=email).exists():
             return Response({'error': 'Email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Save the new service provider data
         serializer.save()
 
         # Extract the validated data for email
@@ -27,7 +22,6 @@ def Providersignup(request):
         mobile_no = data.get('mobile_no')
         zipcode = data.get('zipcode')
 
-        # Prepare the email content
         subject = 'New Service Provider Signup'
         message = f"""
         Dear Admin,
@@ -95,7 +89,6 @@ def ProviderLogin(request):
 @api_view(['GET', 'PUT'])
 def profile_data(request):
     email = request.GET.get('email')
-
     if request.method == 'GET':
         if email:
             try:
@@ -121,54 +114,87 @@ def profile_data(request):
         return Response({'error': 'Email parameter is required'}, status=400)
 
 
-@api_view(['GET','PUT','DELETE','POST'])
+@api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def PackagesData(request):
     email = request.GET.get('email')
     id = request.GET.get('id')
+
     if request.method == 'GET':
-       try:
-           if email:
-               packagedata = PackagesModel.objects.filter(company_email=email)
-               serializer = PackageSerializer(packagedata, many=True)
-               return Response(serializer.data)
-           elif id:
-               packagedata = PackagesModel.objects.get(id=id)
-               serializer = PackageSerializer(packagedata,many=True)
-               return Response(serializer.data)
-           else:
-               packagedata = PackagesModel.objects.all()
-               serializer = PackageSerializer(packagedata,many=True)
-               return Response(serializer.data,status=status.HTTP_200_OK)
-       except PackagesModel.DoesNotExist:
-            return Response({'error': 'Data not found'}, status=404)
+        try:
+            if email:
+                packagedata = PackagesModel.objects.filter(company_email=email)
+                if not packagedata.exists():
+                    return Response({'error': 'No packages found for the given email'},
+                                    status=status.HTTP_404_NOT_FOUND)
+                serializer = PackageSerializer(packagedata, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            elif id:
+                try:
+                    packagedata = PackagesModel.objects.get(id=id)
+                    serializer = PackageSerializer(packagedata)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                except PackagesModel.DoesNotExist:
+                    return Response({'error': 'Package with the given ID not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            else:
+                packagedata = PackagesModel.objects.all()
+                serializer = PackageSerializer(packagedata, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': 'An unexpected error occurred: ' + str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     elif request.method == 'POST':
-        try:
-            serializer = PackageSerializer(data=request.data)
-            if serializer.is_valid():
+        serializer = PackageSerializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid():
+            try:
                 serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    elif request.method == 'DELETE':
-        try:
-            PackagesModel.objects.filter(id=id).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({'error': 'Failed to create package: ' + str(e)},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'validation_error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'PUT':
+        if not id:
+            return Response({'error': 'Package ID is required for updating'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             packagedata = PackagesModel.objects.get(id=id)
-            data = request.data
-            serializer = PackageSerializer(packagedata, data=data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            return Response(serializer.errors, status=400)
         except PackagesModel.DoesNotExist:
-            return Response({'error': 'User not found'}, status=404)
+            return Response({'error': 'Package with the given ID not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PackageSerializer(packagedata, data=request.data, partial=True)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': 'Failed to update package: ' + str(e)},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'validation_error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        if not id:
+            return Response({'error': 'Package ID is required for deletion'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            packagedata = PackagesModel.objects.get(id=id)
+            packagedata.delete()
+            return Response({'message': 'Package deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except PackagesModel.DoesNotExist:
+            return Response({'error': 'Package with the given ID not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': 'Failed to delete package: ' + str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    else:
+        return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @api_view(['GET','PUT','DELETE','POST'])

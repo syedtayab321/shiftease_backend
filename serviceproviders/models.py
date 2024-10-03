@@ -10,6 +10,7 @@ class ServiceProviders(models.Model):
     zipcode = models.CharField(max_length=6)
     password = models.CharField(max_length=200)
     request_status = models.CharField(max_length=20)
+    profile_image = models.ImageField(upload_to='images/company_profiles')
     def __str__(self):
         return self.email
 
@@ -18,6 +19,7 @@ class PackagesModel(models.Model):
     package_name = models.CharField(max_length=254)
     package_service = models.CharField(max_length=200)
     package_price = models.IntegerField()
+    package_image = models.ImageField(upload_to='images/packages_images')
 
 class AddTeamModel(models.Model):
     company_email = models.EmailField(max_length=254)

@@ -32,7 +32,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',  # Flutter app (if using web)
     'http://10.0.2.2:8000',  # For Android emulators in Flutter
     'http://192.168.18.2:8000',
-    'http://192.168.1.110:8000',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 # Application definition

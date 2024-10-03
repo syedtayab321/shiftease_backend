@@ -4,4 +4,5 @@ urlpatterns = [
     path('userdata/',views.UserData,name='userdata'),
     path('accountApproval/',views.AccountApproval,name='accountApproval'),
     path('UserSignUp/',views.SignUpUsers,name='UserSignUp'),
+    path('HouseSellingAd/',views.HouseRentAd,name='HouseRentAd'),
 ]
