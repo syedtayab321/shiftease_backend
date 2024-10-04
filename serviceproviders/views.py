@@ -85,7 +85,6 @@ def ProviderLogin(request):
         print(f"An error occurred: {e}")
         return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['GET', 'PUT'])
 def profile_data(request):
     email = request.GET.get('email')
@@ -112,7 +111,6 @@ def profile_data(request):
             except ServiceProviders.DoesNotExist:
                 return Response({'error': 'User not found'}, status=404)
         return Response({'error': 'Email parameter is required'}, status=400)
-
 
 @api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def PackagesData(request):
@@ -196,7 +194,6 @@ def PackagesData(request):
     else:
         return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-
 @api_view(['GET','PUT','DELETE','POST'])
 def TeamData(request):
     email = request.GET.get('email')
@@ -251,3 +248,9 @@ def TeamData(request):
             return Response(serializer.errors, status=400)
         except AddTeamModel.DoesNotExist:
             return Response({'error': 'User not found'}, status=404)
+
+@api_view(['GET','PUT','DELETE','POST'])
+def ServiceBookingRequests(request):
+      if request.method == 'POST':
+          print(request.data)
+          return Response(status=status.HTTP_201_CREATED)

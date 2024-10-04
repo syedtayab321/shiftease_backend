@@ -9,7 +9,7 @@ from serviceproviders.serializers import ServiceProvidersSerializer, AccountAppr
 from Admin.serializer import UserSerializer,HouseRentAdSerializer,OfficeRentAdSerializer,ApartmentRentAdSerializer
 from rest_framework import status
 @api_view(['GET','POST','PUT','DELETE'])
-def UserData(request):
+def ProvidersData(request):
     if request.method == 'GET':
         try:
             userdata = ServiceProviders.objects.all()
