@@ -23,13 +23,14 @@ def ProvidersData(request):
             return Response('UserData Deleted Sucessfully')
         except Exception as e:
             return Response('No Data Found')
+        
 logger = logging.getLogger(__name__)
-
 @api_view(['POST'])
 def AccountApproval(request):
     serializer = AccountApprovalSerializer(data=request.data)
     if serializer.is_valid():
         email = serializer.validated_data.get('email')
+        id = serializer.validated_data.get('id')
         status_value = serializer.validated_data.get('request_status')
         try:
             num_updated = ServiceProviders.objects.filter(email=email).update(request_status=status_value)
@@ -37,7 +38,6 @@ def AccountApproval(request):
                 logger.warning(f'No user found with email: {email}')
                 return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
             else:
-             #    email send after approval
                  subject = 'Account Approval'
                  message = f"""
                          Dear User ,
@@ -62,10 +62,9 @@ def SignUpUsers(request):
     if request.method == 'POST':
         print("Incoming data:", request.data)
         try:
-            # Try to serialize the incoming data
             serializer = UserSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()  # Save the user data
+                serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,4 @@
 from django.db import models
-
-# Create your models here.
 class ServiceProviders(models.Model):
     email = models.EmailField(max_length=254)
     company_name = models.CharField(max_length=254)
@@ -15,14 +13,15 @@ class ServiceProviders(models.Model):
         return self.email
 
 class PackagesModel(models.Model):
-    company_email=models.EmailField(max_length=254)
+    company_id=models.IntegerField(max_length=254)
     package_name = models.CharField(max_length=254)
     package_service = models.CharField(max_length=200)
+    package_description=models.CharField(max_length=1000)
     package_price = models.IntegerField()
     package_image = models.ImageField(upload_to='images/packages_images')
 
 class AddTeamModel(models.Model):
-    company_email = models.EmailField(max_length=254)
+    company_id = models.IntegerField(max_length=254)
     team_name = models.CharField(max_length=254)
     team_member_email = models.EmailField(max_length=254)
     team_member_name = models.CharField(max_length=254)

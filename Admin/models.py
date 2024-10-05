@@ -5,6 +5,7 @@ class Users(models.Model):
     username = models.CharField(max_length=200)
     email = models.EmailField(max_length=200)
     password = models.CharField(max_length=200)
+    users_uid=models.CharField(max_length=1000)
 
 class HouseRentAd(models.Model):
     houseImage=models.ImageField(upload_to="images/RentHouse/")

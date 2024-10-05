@@ -9,7 +9,7 @@ class ServiceProvidersSerializer(serializers.ModelSerializer):
 class AccountApprovalSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceProviders
-        fields = ['email','request_status']
+        fields = ['id','email','request_status']
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:

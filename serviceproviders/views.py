@@ -57,41 +57,32 @@ def Providersignup(request):
 def ProviderLogin(request):
     email = request.data.get('email')
     password = request.data.get('password')
-
-    # Check if the email and password are provided
     if not email or not password:
         return Response({'error': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
-
     try:
         user = ServiceProviders.objects.get(email=email)
-
-        # Verify the password
         if password != user.password:
             return Response({'error': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Prepare user data to send back
         user_data = {
+            'id':user.id,
             'email': user.email,
             'companyname': user.company_name,
             'requeststatus': user.request_status
         }
-
         return Response(user_data, status=status.HTTP_200_OK)
-
     except ServiceProviders.DoesNotExist:
         return Response({'error': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        # Log the exception or print it for debugging purposes
         print(f"An error occurred: {e}")
         return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET', 'PUT'])
-def profile_data(request):
-    email = request.GET.get('email')
+def ProvidersOwnData(request):
+    id = request.GET.get('id')
     if request.method == 'GET':
-        if email:
+        if id:
             try:
-                user_profile = ServiceProviders.objects.get(email=email)
+                user_profile = ServiceProviders.objects.get(id=id)
                 serializer = UserProfileSerializer(user_profile)
                 return Response(serializer.data)
             except ServiceProviders.DoesNotExist:
@@ -99,9 +90,9 @@ def profile_data(request):
         return Response({'error': 'Email parameter is required'}, status=400)
 
     elif request.method == 'PUT':
-        if email:
+        if id:
             try:
-                user_profile = ServiceProviders.objects.get(email=email)
+                user_profile = ServiceProviders.objects.get(id=id)
                 data = request.data
                 serializer = UserProfileSerializer(user_profile, data=data, partial=True)
                 if serializer.is_valid():
@@ -114,35 +105,35 @@ def profile_data(request):
 
 @api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def PackagesData(request):
-    email = request.GET.get('email')
-    id = request.GET.get('id')
-
+    company_id = request.GET.get('company_id')
+    package_id = request.GET.get('package_id')
     if request.method == 'GET':
         try:
-            if email:
-                packagedata = PackagesModel.objects.filter(company_email=email)
+            if company_id:
+                packagedata = PackagesModel.objects.filter(company_id=company_id)
                 if not packagedata.exists():
-                    return Response({'error': 'No packages found for the given email'},
+                    return Response({'error': 'No packages found for the given company_id'}, 
                                     status=status.HTTP_404_NOT_FOUND)
                 serializer = PackageSerializer(packagedata, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
-
-            elif id:
+            elif package_id:
                 try:
-                    packagedata = PackagesModel.objects.get(id=id)
+                    packagedata = PackagesModel.objects.get(id=package_id)
                     serializer = PackageSerializer(packagedata)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 except PackagesModel.DoesNotExist:
-                    return Response({'error': 'Package with the given ID not found'}, status=status.HTTP_404_NOT_FOUND)
-
+                    return Response({'error': 'No packages found for the given package_id'}, 
+                                    status=status.HTTP_404_NOT_FOUND)
             else:
                 packagedata = PackagesModel.objects.all()
                 serializer = PackageSerializer(packagedata, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({'error': 'An unexpected error occurred: ' + str(e)},
+            print(str(e))
+            return Response({'error': 'An unexpected error occurred: ' + str(e)}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     elif request.method == 'POST':
         serializer = PackageSerializer(data=request.data)
@@ -158,11 +149,10 @@ def PackagesData(request):
             return Response({'validation_error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'PUT':
-        if not id:
+        if not package_id:
             return Response({'error': 'Package ID is required for updating'}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            packagedata = PackagesModel.objects.get(id=id)
+            packagedata = PackagesModel.objects.get(id=package_id)
         except PackagesModel.DoesNotExist:
             return Response({'error': 'Package with the given ID not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -178,11 +168,11 @@ def PackagesData(request):
             return Response({'validation_error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if not id:
+        if not package_id:
             return Response({'error': 'Package ID is required for deletion'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            packagedata = PackagesModel.objects.get(id=id)
+            packagedata = PackagesModel.objects.get(id=package_id)
             packagedata.delete()
             return Response({'message': 'Package deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except PackagesModel.DoesNotExist:
@@ -196,17 +186,17 @@ def PackagesData(request):
 
 @api_view(['GET','PUT','DELETE','POST'])
 def TeamData(request):
-    email = request.GET.get('email')
-    id = request.GET.get('id')
+    member_id = request.GET.get('id')
+    company_id = request.GET.get('company_id')
     if request.method == 'GET':
         try:
-            if email:
-                teamdata = AddTeamModel.objects.filter(company_email=email)
+            if member_id:
+                teamdata = AddTeamModel.objects.get(id=member_id)
                 serializer = AddTeamSerializer(teamdata, many=True)
                 return Response(serializer.data)
-            elif id:
-                teamdata = AddTeamModel.objects.get(id=id)
-                serializer = AddTeamSerializer(teamdata)
+            if company_id:
+                teamdata = AddTeamModel.objects.get(company_id=company_id)
+                serializer = AddTeamSerializer(teamdata, many=True)
                 return Response(serializer.data)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
@@ -232,14 +222,14 @@ def TeamData(request):
 
     elif request.method == 'DELETE':
         try:
-            AddTeamModel.objects.filter(id=id).delete()
+            AddTeamModel.objects.filter(id=member_id).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     elif request.method == 'PUT':
         try:
-            teamdata = AddTeamModel.objects.get(id=id)
+            teamdata = AddTeamModel.objects.get(id=member_id)
             data = request.data
             serializer = AddTeamSerializer(teamdata, data=data, partial=True)
             if serializer.is_valid():
