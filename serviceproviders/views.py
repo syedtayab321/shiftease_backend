@@ -192,10 +192,10 @@ def TeamData(request):
         try:
             if member_id:
                 teamdata = AddTeamModel.objects.get(id=member_id)
-                serializer = AddTeamSerializer(teamdata, many=True)
+                serializer = AddTeamSerializer(teamdata)
                 return Response(serializer.data)
-            if company_id:
-                teamdata = AddTeamModel.objects.get(company_id=company_id)
+            elif company_id:
+                teamdata = AddTeamModel.objects.filter(company_id=company_id)
                 serializer = AddTeamSerializer(teamdata, many=True)
                 return Response(serializer.data)
         except Exception as e:
@@ -207,7 +207,6 @@ def TeamData(request):
             try:
                 if AddTeamModel.objects.filter(team_member_email=email).exists():
                     return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
-
                 if AddTeamModel.objects.filter(team_member_cnic=cnic).exists():
                     return Response({'error': 'CNIC already exists'}, status=status.HTTP_400_BAD_REQUEST)
                 serializer = AddTeamSerializer(data=request.data)

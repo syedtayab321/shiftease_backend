@@ -1,7 +1,7 @@
 import logging
 from django.core.mail import send_mail
 from Admin.models import Users
-from Admin.models import HouseRentAd as HouseModel
+from Admin.models import HouseRentAd,OfficeRentAd,ApartmentRentAd
 from serviceproviders.models import ServiceProviders
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -82,8 +82,9 @@ def SignUpUsers(request):
 
 
 @api_view(['POST','GET','PUT','DELETE'])
-def HouseRentAd(request):
+def HouseRentAdData(request):
     email = request.data.get('ownerEmail', None)
+    ad_id=request.GET.get('ad_id')
     if request.method == 'POST':
             serializer = HouseRentAdSerializer(data=request.data)
             if serializer.is_valid():
@@ -95,14 +96,89 @@ def HouseRentAd(request):
     elif request.method == 'GET':
         try:
             if email:
-                HouseRentData = HouseModel.objects.filter(email=email)
+                HouseRentData = HouseRentAd.objects.filter(ownerEmail=email)
                 serializerData = HouseRentAdSerializer(HouseRentData, many=True)
                 return Response(serializerData.data, status=status.HTTP_200_OK)
             else:
-                HouseRentData = HouseModel.objects.all()
+                HouseRentData = HouseRentAd.objects.all()
                 serializerData = HouseRentAdSerializer(HouseRentData, many=True)
                 return Response(serializerData.data, status=status.HTTP_200_OK)
         except Exception as e:
              print(e)
              return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method == 'DELETE':
+            try:
+                HouseRentData=HouseRentAd.objects.filter(id=ad_id).delete()
+                return Response('Data Deleted Sucessfully')
+            except Exception as e:
+                return Response('No Data Fond with the id')
+
+    return Response("error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST','GET','PUT','DELETE'])
+def ApartmentRentAdData(request):
+    email = request.data.get('ownerEmail', None)
+    ad_id=request.GET.get('ad_id')
+    if request.method == 'POST':
+            serializer = ApartmentRentAdSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        try:
+            if email:
+                ApartmentRentData =ApartmentRentAd.objects.filter(ownerEmail=email)
+                serializerData = HouseRentAdSerializer(ApartmentRentData, many=True)
+                return Response(serializerData.data, status=status.HTTP_200_OK)
+            else:
+                ApartmentRentData = ApartmentRentAd.objects.all()
+                serializerData = ApartmentRentAdSerializer(ApartmentRentData, many=True)
+                return Response(serializerData.data, status=status.HTTP_200_OK)
+        except Exception as e:
+             print(e)
+             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method == 'DELETE':
+            try:
+                ApartmentRentAd.objects.filter(id=ad_id).delete()
+                return Response('Data Deleted Sucessfully')
+            except Exception as e:
+                return Response('No Data Fond with the id')
+    return Response("error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST','GET','PUT','DELETE'])
+def OfficeRentAdData(request):
+    email = request.data.get('ownerEmail', None)
+    ad_id=request.GET.get('ad_id')
+    if request.method == 'POST':
+            serializer = OfficeRentAdSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        try:
+            if email:
+                ApartmentRentData =OfficeRentAd.objects.filter(ownerEmail=email)
+                serializerData = HouseRentAdSerializer(ApartmentRentData, many=True)
+                return Response(serializerData.data, status=status.HTTP_200_OK)
+            else:
+                ApartmentRentData = ApartmentRentAd.objects.all()
+                serializerData = ApartmentRentAdSerializer(ApartmentRentData, many=True)
+                return Response(serializerData.data, status=status.HTTP_200_OK)
+        except Exception as e:
+             print(e)
+             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method == 'DELETE':
+            try:
+                OfficeRentAd.objects.filter(id=ad_id).delete()
+                return Response('Data Deleted Sucessfully')
+            except Exception as e:
+                return Response('No Data Fond with the id')
     return Response("error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
