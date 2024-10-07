@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ServiceProviders,PackagesModel,AddTeamModel
+from .models import ServiceProviders,PackagesModel,AddTeamModel,OrderRequestsModal
 
 class ServiceProvidersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,4 +24,9 @@ class PackageSerializer(serializers.ModelSerializer):
 class AddTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = AddTeamModel
+        fields = '__all__'
+
+class OrderRequestsSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = OrderRequestsModal
         fields = '__all__'

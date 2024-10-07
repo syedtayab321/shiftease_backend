@@ -2,8 +2,8 @@ from django.core.mail import send_mail
 from rest_framework.decorators import api_view,parser_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ServiceProvidersSerializer,UserProfileSerializer,PackageSerializer,AddTeamSerializer
-from .models import ServiceProviders,PackagesModel,AddTeamModel
+from .serializers import ServiceProvidersSerializer,UserProfileSerializer,PackageSerializer,AddTeamSerializer,OrderRequestsSerializers
+from .models import ServiceProviders,PackagesModel,AddTeamModel,OrderRequestsModal
 from rest_framework.parsers import MultiPartParser, FormParser
 @api_view(['POST'])
 def Providersignup(request):
@@ -63,13 +63,8 @@ def ProviderLogin(request):
         user = ServiceProviders.objects.get(email=email)
         if password != user.password:
             return Response({'error': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
-        user_data = {
-            'id':user.id,
-            'email': user.email,
-            'companyname': user.company_name,
-            'requeststatus': user.request_status
-        }
-        return Response(user_data, status=status.HTTP_200_OK)
+        user_data = ServiceProvidersSerializer(user)
+        return Response(user_data.data, status=status.HTTP_200_OK)
     except ServiceProviders.DoesNotExist:
         return Response({'error': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
@@ -214,7 +209,6 @@ def TeamData(request):
                     serializer.save()
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
-                    print("Serializer Errors:", serializer.errors)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
                 return Response({'error': str(e)}, status=500)
@@ -240,6 +234,21 @@ def TeamData(request):
 
 @api_view(['GET','PUT','DELETE','POST'])
 def ServiceBookingRequests(request):
-      if request.method == 'POST':
-          print(request.data)
-          return Response(status=status.HTTP_201_CREATED)
+    if request.method == 'POST':
+          try:
+              serializer=OrderRequestsSerializers( data=request.data)
+              if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+              else:
+                    print(request.data)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+          except Exception as e:
+                     return Response({'error': str(e)}, status=500)
+    elif request.method == 'GET':
+        try:
+            ordersdata = OrderRequestsModal.objects.all()
+            serializer = OrderRequestsSerializers(ordersdata, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
