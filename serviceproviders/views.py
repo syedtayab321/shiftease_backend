@@ -2,8 +2,8 @@ from django.core.mail import send_mail
 from rest_framework.decorators import api_view,parser_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ServiceProvidersSerializer,UserProfileSerializer,PackageSerializer,AddTeamSerializer,OrderRequestsSerializers
-from .models import ServiceProviders,PackagesModel,AddTeamModel,OrderRequestsModal
+from .serializers import ServiceProvidersSerializer,UserProfileSerializer,PackageSerializer,AddTeamSerializer,OrderRequestsSerializers,OrderRequestApprovalSerializers
+from .models import ServiceProviders,PackagesModel,AddTeamModel,OrderRequestsModal,ApprovedOrdersModal
 from rest_framework.parsers import MultiPartParser, FormParser
 @api_view(['POST'])
 def Providersignup(request):
@@ -251,4 +251,36 @@ def ServiceBookingRequests(request):
             serializer = OrderRequestsSerializers(ordersdata, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
+            return Response({'error': str(e)}, status=500)
+        
+    elif request.method == 'DELETE':
+        request_id=request.GET.get('request_id')
+        try:
+            OrderRequestsModal.objects.filter(id=request_id).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+@api_view(['GET','PUT','DELETE','POST'])
+def OrderAprrovals(request):
+    if request.method == 'POST':
+          try:
+              serializer=OrderRequestApprovalSerializers(data=request.data)
+              if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+              else:
+                    print(request.data)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+          except Exception as e:
+                     print(e)
+                     return Response({'error': str(e)}, status=500)
+    elif request.method == 'GET':
+        company_id=request.GET.get('company_id')
+        try:
+            ordersdata = ApprovedOrdersModal.objects.filter(Company_id=company_id)
+            serializer = OrderRequestApprovalSerializers(ordersdata, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
             return Response({'error': str(e)}, status=500)

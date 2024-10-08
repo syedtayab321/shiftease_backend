@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import ServiceProviders,PackagesModel,AddTeamModel,OrderRequestsModal
-
+from .models import ServiceProviders,PackagesModel,AddTeamModel,OrderRequestsModal,ApprovedOrdersModal
 class ServiceProvidersSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceProviders
@@ -29,4 +28,9 @@ class AddTeamSerializer(serializers.ModelSerializer):
 class OrderRequestsSerializers(serializers.ModelSerializer):
     class Meta:
         model = OrderRequestsModal
+        fields = '__all__'
+
+class OrderRequestApprovalSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ApprovedOrdersModal
         fields = '__all__'

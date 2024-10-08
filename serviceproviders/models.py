@@ -39,3 +39,13 @@ class OrderRequestsModal(models.Model):
     Company_id=models.CharField(max_length=1000,default='')
     request_status=models.CharField(max_length=100)
     OrderPersonId=models.CharField(max_length=1000)
+
+class ApprovedOrdersModal(models.Model):
+    Company_id=models.CharField(max_length=1000,default='')
+    client_name=models.CharField(max_length=1000)
+    location=models.CharField(max_length=1000)
+    service_date=models.DateField()
+    package_id=models.CharField(max_length=1000,default='')
+    package_price=models.CharField(max_length=1000,default='')
+    team_name=models.CharField(max_length=1000)
+    order_status=models.CharField(max_length=100,default='')

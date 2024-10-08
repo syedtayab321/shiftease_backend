@@ -8,4 +8,5 @@ urlpatterns = [
      path('packagesdata/', views.PackagesData, name='packagesdata'),
      path('teamdata/', views.TeamData, name='teamdata'),
      path('serviceBookingRequests/', views.ServiceBookingRequests, name='serviceBookingRequests'),
+     path('ApprovedOrders/',views.OrderAprrovals,name='ApprovedOrders'),
     ]
