@@ -30,12 +30,12 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # React app (localhost for development)
     'http://localhost:8000',  # Flutter app (if using web)
-    'http://10.0.2.2:8000',  # For Android emulators in Flutter
-    'http://192.168.18.2:8000',
-    'http://192.168.249.18:9898'
+    'http://10.0.2.2',  # For Android emulators in Flutter
+    'http://192.168.18.2',
+    'http://192.168.249.18',
+    'http://192.168.112.18'
 ]
 CORS_ORIGIN_ALLOW_ALL = True
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'serviceproviders',
     'Admin',
+    'MessageSystem',
     'rest_framework',
     'corsheaders',
 ]
