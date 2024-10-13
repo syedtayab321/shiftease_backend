@@ -275,6 +275,7 @@ def OrderAprrovals(request):
           except Exception as e:
                      print(e)
                      return Response({'error': str(e)}, status=500)
+
     elif request.method == 'GET':
         company_id=request.GET.get('company_id')
         try:
@@ -289,3 +290,24 @@ def OrderAprrovals(request):
         except Exception as e:
             print(e)
             return Response({'error': str(e)}, status=500)
+
+    elif request.method == 'PUT':
+        orderId=request.GET.get('order_id')
+        try:
+            ApprovedData = ApprovedOrdersModal.objects.get(id=orderId)
+        except ApprovedOrdersModal.DoesNotExist:
+            return Response({"error": "House Rent Ad not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OrderRequestApprovalSerializers(ApprovedData, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        orderId=request.GET.get('order_id')
+        try:
+            ApprovedOrdersModal.objects.filter(id=orderId).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
