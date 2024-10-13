@@ -278,9 +278,14 @@ def OrderAprrovals(request):
     elif request.method == 'GET':
         company_id=request.GET.get('company_id')
         try:
-            ordersdata = ApprovedOrdersModal.objects.filter(Company_id=company_id)
-            serializer = OrderRequestApprovalSerializers(ordersdata, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if company_id:
+                ordersdata = ApprovedOrdersModal.objects.filter(Company_id=company_id)
+                serializer = OrderRequestApprovalSerializers(ordersdata, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                ordersdata = ApprovedOrdersModal.objects.all()
+                serializer = OrderRequestApprovalSerializers(ordersdata, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response({'error': str(e)}, status=500)
