@@ -1,17 +1,17 @@
 from rest_framework import serializers
 from MessageSystem import models as MessageModals
 
-class AdminProviderMessageSerializer(serializers.ModelSerializer):
+class AdminMessageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MessageModals.AdminProviderMessageModal
+        model = MessageModals.AdminMessageModal
         fields = '__all__'
 
-class AdminUserMessageSerializer(serializers.ModelSerializer):
+class UserMessageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MessageModals.AdminUserMessageModal
+        model = MessageModals.UserMessageModal
         fields = '__all__'
 
-class ProviderUserMessageSerializer(serializers.ModelSerializer):
+class ProviderMessageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MessageModals.AdminUserMessageModal
+        model = MessageModals.ProviderMessageModal
         fields = '__all__'

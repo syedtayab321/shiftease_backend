@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class AdminProviderMessageModal(models.Model):
+class AdminMessageModal(models.Model):
       sender_id=models.IntegerField()
       receiver_id=models.IntegerField()
       sender_name=models.CharField(max_length=100)
@@ -10,7 +10,7 @@ class AdminProviderMessageModal(models.Model):
       message_time=models.DateTimeField(auto_now_add=True)
 
 
-class AdminUserMessageModal(models.Model):
+class UserMessageModal(models.Model):
     sender_id = models.IntegerField()
     receiver_id = models.IntegerField()
     sender_name = models.CharField(max_length=100)
@@ -19,7 +19,7 @@ class AdminUserMessageModal(models.Model):
     message_time = models.DateTimeField(auto_now_add=True)
 
 
-class ProviderUserMessageModal(models.Model):
+class ProviderMessageModal(models.Model):
     sender_id = models.IntegerField()
     receiver_id = models.IntegerField()
     sender_name = models.CharField(max_length=100)

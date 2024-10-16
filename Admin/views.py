@@ -1,6 +1,4 @@
 import logging
-from dbm import error
-
 from django.core.mail import send_mail
 from Admin.models import Users
 from Admin.models import HouseRentAd,OfficeRentAd,ApartmentRentAd
