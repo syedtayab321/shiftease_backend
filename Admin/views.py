@@ -159,7 +159,7 @@ def ApartmentRentAdData(request):
 
     elif request.method == 'DELETE':
             try:
-                ApartmentRentAd.objects.filter(id=ad_id).delete()
+                ApartmentRentAd.objects.filter(id=id).delete()
                 return Response('Data Deleted Sucessfully')
             except Exception as e:
                 return Response('No Data Fond with the id')

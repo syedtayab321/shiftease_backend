@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/shiftease_web_app.iml" filepath="$PROJECT_DIR$/.idea/shiftease_web_app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../shiftease_webportal/.idea/shiftease_webportal.iml" filepath="$PROJECT_DIR$/../shiftease_webportal/.idea/shiftease_webportal.iml" />
     </modules>
   </component>
 </project>
