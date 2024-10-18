@@ -1,5 +1,5 @@
 from django.urls import path
-from MessageSystem import views
+from MessageApp import views
 
 urlpatterns = [
       path('adminMessage/', views.AdminMessages, name='adminMessage/'),
