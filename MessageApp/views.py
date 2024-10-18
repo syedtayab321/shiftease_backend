@@ -22,7 +22,6 @@ def AdminMessages(request):
 def ProviderMessages(request):
     if request.method == 'POST':
         message_data = MessageSerializers.ProviderMessageSerializer(data=request.data)
-        print(message_data)
         if message_data.is_valid():
             message_data.save()
             return Response('Message Send Sucessfully', status=status.HTTP_200_OK)
@@ -37,6 +36,13 @@ def ProviderMessages(request):
         except Exception as e:
             print(e)
             return Response({'error': str(e)}, status=500)
+    if request.method == 'DELETE':
+        messageId=request.GET.get('messageId')
+        try:
+            MessageModels.ProviderMessageModal.objects.filter(id=messageId).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response('Please Provide some data')
 
