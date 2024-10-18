@@ -123,9 +123,9 @@ def HouseRentAdData(request):
     return Response({"error": "Invalid Request"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST','GET','PUT','DELETE'])
+@api_view(['POST', 'GET', 'PUT', 'DELETE'])
 def ApartmentRentAdData(request):
-    id=request.GET.get('id')
+    id = request.GET.get('id')
     if request.method == 'POST':
             serializer = ApartmentRentAdSerializer(data=request.data)
             if serializer.is_valid():

@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class AdminMessageModal(models.Model):
     senderId = models.IntegerField()
     receiverId = models.IntegerField()
