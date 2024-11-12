@@ -47,13 +47,22 @@ def AdminMessages(request):
 @api_view(['POST', 'GET', 'PUT', 'DELETE'])
 def ProviderMessages(request):
     if request.method == 'POST':
+        receiverName = request.data.get('receiverName')
         ProviderMessage_data = MessageSerializers.ProviderMessageSerializer(data=request.data)
         AdminMessage_data = MessageSerializers.AdminMessageSerializer(data=request.data)
+        UserMessage_data = MessageSerializers.UserMessageSerializer(data=request.data)
+
         if ProviderMessage_data.is_valid():
             ProviderMessage_data.save()
-            if AdminMessage_data.is_valid():
-                AdminMessage_data.save()
-                return Response('Message Send Successfully', status=status.HTTP_200_OK)
+            if receiverName == 'Admin':
+                if AdminMessage_data.is_valid():
+                    AdminMessage_data.save()
+                    return Response('Message Send Successfully', status=status.HTTP_200_OK)
+                else:
+                    if UserMessage_data.is_valid():
+                        UserMessage_data.save()
+                        return Response('Message Send Successfully', status=status.HTTP_200_OK)
+
             return Response('Admin Data Is not Valid', status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(ProviderMessage_data.errors, status=status.HTTP_400_BAD_REQUEST)
