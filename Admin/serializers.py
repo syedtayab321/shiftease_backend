@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RentAdImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentAdImage
-        fields = '__all__'
+        fields = ['rent_ad', 'image']
 
 
 class RentAdSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class RentAdSerializer(serializers.ModelSerializer):
         model = RentAd
         fields = [
             'id', 'title', 'propertyType', 'country', 'city', 'address', 'price_per_month', 'ownerName',
-            'ownerNumber', 'ownerEmail', 'requestStatus', 'furnishing','Description',
+            'ownerNumber', 'ownerEmail', 'requestStatus', 'furnishing', 'Description',
             'houseType', 'builtYear', 'bedrooms', 'bathrooms', 'area',
             'officeType', 'officeSize', 'floorNumber', 'buildingType',
             'apartmentType', 'apartmentSize', 'images'

@@ -2,6 +2,7 @@ import logging
 from django.core.mail import send_mail
 from Admin.models import Users
 from serviceproviders import models as ProvidersModals
+from Admin import models as AdminModels
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from serviceproviders import serializers as ProviderSerializer
@@ -106,27 +107,86 @@ def SignUpUsers(request):
 def RentAdsData(request):
     if request.method == 'POST':
         try:
-            # Separate image data from other fields
-            image_data = request.FILES.getlist('images')
+            images = request.FILES.getlist('images')
             ad_data = {key: value for key, value in request.data.items() if key != 'images'}
-            # Serialize and save RentAd (excluding images for now)
             rent_ad_serializer = AdminSerializer.RentAdSerializer(data=ad_data)
             if rent_ad_serializer.is_valid():
                 rent_ad = rent_ad_serializer.save()
-                for image in image_data:
-                    image_serializer = AdminSerializer.RentAdImage(data={'rent_ad': rent_ad.id, 'image': image})
+                for image in images:
+                    image_serializer = AdminSerializer.RentAdImageSerializer(
+                        data={'rent_ad': rent_ad.id, 'image': image})
                     if image_serializer.is_valid():
                         image_serializer.save()
                     else:
                         print(image_serializer.errors)
                         return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                full_data = AdminSerializer.RentAdSerializer(rent_ad).data
-                return Response(full_data, status=status.HTTP_201_CREATED)
+                return Response(AdminSerializer.RentAdSerializer(rent_ad).data, status=status.HTTP_201_CREATED)
             else:
-                 print(rent_ad_serializer.errors)
-                 return Response(rent_ad_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+                print(rent_ad_serializer.errors)
+                return Response(rent_ad_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-              return Response({'error': f"Error in creating rent ad: {str(e)}"},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    elif request.method == 'GET':
+        rent_ad_id = request.GET.get('rent_id')
+        userEmail = request.GET.get('userMail')
+        if rent_ad_id:
+            try:
+                rent_ad = AdminModels.RentAd.objects.get(id=rent_ad_id)
+                rent_ad_serializer = AdminSerializer.RentAdSerializer(rent_ad)
+                return Response(rent_ad_serializer.data, status=status.HTTP_200_OK)
+            except AdminModels.RentAd.DoesNotExist:
+                return Response({'error': 'Rent Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+        if userEmail:
+            try:
+                rent_ad = AdminModels.RentAd.objects.get(ownerEmail=userEmail)
+                rent_ad_serializer = AdminSerializer.RentAdSerializer(rent_ad)
+                return Response(rent_ad_serializer.data, status=status.HTTP_200_OK)
+            except AdminModels.RentAd.DoesNotExist:
+                return Response({'error': 'Rent Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            rent_ads = AdminModels.RentAd.objects.all()
+            rent_ad_serializer = AdminSerializer.RentAdSerializer(rent_ads, many=True)
+            return Response(rent_ad_serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'PUT':
+        rent_ad_id = request.GET.get('rent_id')
+        if not rent_ad_id:
+            return Response({'error': 'Rent Ad ID is required for updating'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            rent_ad = AdminModels.RentAd.objects.get(id=rent_ad_id)
+            images = request.FILES.getlist('images')
+            ad_data = {key: value for key, value in request.data.items() if key != 'images'}
+            rent_ad_serializer = AdminSerializer.RentAdSerializer(rent_ad, data=ad_data, partial=True)
+            if rent_ad_serializer.is_valid():
+                updated_rent_ad = rent_ad_serializer.save()
+
+                for image in images:
+                    image_serializer = AdminSerializer.RentAdImageSerializer(
+                        data={'rent_ad': updated_rent_ad.id, 'image': image}
+                    )
+                    if image_serializer.is_valid():
+                        image_serializer.save()
+                    else:
+                        return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(AdminSerializer.RentAdSerializer(updated_rent_ad).data, status=status.HTTP_200_OK)
+            else:
+                return Response(rent_ad_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except AdminModels.RentAd.DoesNotExist:
+            return Response({'error': 'Rent Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    elif request.method == 'DELETE':
+        rent_ad_id = request.GET.get('rent_id')
+        if not rent_ad_id:
+            return Response({'error': 'Rent Ad ID is required for deletion'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            rent_ad = AdminModels.RentAd.objects.get(id=rent_ad_id)
+            rent_ad.delete()
+            return Response({'message': 'Rent Ad deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except AdminModels.RentAd.DoesNotExist:
+            return Response({'error': 'Rent Ad not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
