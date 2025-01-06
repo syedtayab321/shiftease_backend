@@ -28,9 +28,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # React app (localhost for development)
-    'http://localhost:8000',  # Flutter app (if using web)
-    'http://10.0.2.2',  # For Android emulators in Flutter
+    'http://localhost:3000',
+    'http://localhost:8000',
+    'http://10.0.2.2',
     'http://192.168.18.2',
     'http://192.168.249.18',
     'http://192.168.112.18'
@@ -150,5 +150,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'syedhussain4508@gmail.com'  # Replace with your email
+EMAIL_HOST_USER = 'syedhussain4508@gmail.com'
 EMAIL_HOST_PASSWORD = 'brzh aevd kizq xzkc'

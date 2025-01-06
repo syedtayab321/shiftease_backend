@@ -22,7 +22,7 @@ def ProvidersData(request):
     elif request.method == 'DELETE':
         try:
             ProvidersModals.ServiceProviders.objects.filter(id=request.GET['id']).delete()
-            return Response('UserData Deleted Sucessfully')
+            return Response('UserData Deleted Successfully')
         except Exception as e:
             return Response('No Data Found')
 
