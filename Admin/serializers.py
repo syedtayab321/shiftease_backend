@@ -26,3 +26,9 @@ class RentAdSerializer(serializers.ModelSerializer):
             'officeType', 'officeSize', 'floorNumber', 'buildingType',
             'apartmentType', 'apartmentSize', 'images'
         ]
+
+
+class RentAdApprovalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RentAd
+        fields = ['id','ownerEmail','requestStatus']

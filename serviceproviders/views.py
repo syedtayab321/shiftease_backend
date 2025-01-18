@@ -1,10 +1,13 @@
 from django.core.mail import send_mail
-from rest_framework.decorators import api_view,parser_classes
+from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ServiceProvidersSerializer,UserProfileSerializer,PackageSerializer,AddTeamSerializer,OrderRequestsSerializers,OrderRequestApprovalSerializers
-from .models import ServiceProviders,PackagesModel,AddTeamModel,OrderRequestsModal,ApprovedOrdersModal
+from .serializers import ServiceProvidersSerializer, UserProfileSerializer, PackageSerializer, AddTeamSerializer, \
+    OrderRequestsSerializers, OrderRequestApprovalSerializers
+from .models import ServiceProviders, PackagesModel, AddTeamModel, OrderRequestsModal, ApprovedOrdersModal
 from rest_framework.parsers import MultiPartParser, FormParser
+
+
 @api_view(['POST'])
 def Providersignup(request):
     serializer = ServiceProvidersSerializer(data=request.data)
@@ -53,6 +56,7 @@ def Providersignup(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 def ProviderLogin(request):
     email = request.data.get('email')
@@ -70,6 +74,7 @@ def ProviderLogin(request):
     except Exception as e:
         print(f"An error occurred: {e}")
         return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['GET', 'PUT'])
 def ProvidersOwnData(request):
@@ -98,6 +103,7 @@ def ProvidersOwnData(request):
                 return Response({'error': 'User not found'}, status=404)
         return Response({'error': 'Email parameter is required'}, status=400)
 
+
 @api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def PackagesData(request):
     company_id = request.GET.get('company_id')
@@ -107,7 +113,7 @@ def PackagesData(request):
             if company_id:
                 packagedata = PackagesModel.objects.filter(company_id=company_id)
                 if not packagedata.exists():
-                    return Response({'error': 'No packages found for the given company_id'}, 
+                    return Response({'error': 'No packages found for the given company_id'},
                                     status=status.HTTP_404_NOT_FOUND)
                 serializer = PackageSerializer(packagedata, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -117,7 +123,7 @@ def PackagesData(request):
                     serializer = PackageSerializer(packagedata)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 except PackagesModel.DoesNotExist:
-                    return Response({'error': 'No packages found for the given package_id'}, 
+                    return Response({'error': 'No packages found for the given package_id'},
                                     status=status.HTTP_404_NOT_FOUND)
             else:
                 packagedata = PackagesModel.objects.all()
@@ -126,7 +132,7 @@ def PackagesData(request):
 
         except Exception as e:
             print(str(e))
-            return Response({'error': 'An unexpected error occurred: ' + str(e)}, 
+            return Response({'error': 'An unexpected error occurred: ' + str(e)},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -179,7 +185,8 @@ def PackagesData(request):
     else:
         return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@api_view(['GET','PUT','DELETE','POST'])
+
+@api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def TeamData(request):
     member_id = request.GET.get('id')
     company_id = request.GET.get('company_id')
@@ -197,21 +204,21 @@ def TeamData(request):
             return Response({'error': str(e)}, status=500)
 
     elif request.method == 'POST':
-            email = request.data.get('team_member_email')
-            cnic = request.data.get('team_member_cnic')
-            try:
-                if AddTeamModel.objects.filter(team_member_email=email).exists():
-                    return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
-                if AddTeamModel.objects.filter(team_member_cnic=cnic).exists():
-                    return Response({'error': 'CNIC already exists'}, status=status.HTTP_400_BAD_REQUEST)
-                serializer = AddTeamSerializer(data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            except Exception as e:
-                return Response({'error': str(e)}, status=500)
+        email = request.data.get('team_member_email')
+        cnic = request.data.get('team_member_cnic')
+        try:
+            if AddTeamModel.objects.filter(team_member_email=email).exists():
+                return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            if AddTeamModel.objects.filter(team_member_cnic=cnic).exists():
+                return Response({'error': 'CNIC already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = AddTeamSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
 
     elif request.method == 'DELETE':
         try:
@@ -232,19 +239,20 @@ def TeamData(request):
         except AddTeamModel.DoesNotExist:
             return Response({'error': 'User not found'}, status=404)
 
-@api_view(['GET','PUT','DELETE','POST'])
+
+@api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def ServiceBookingRequests(request):
     if request.method == 'POST':
-          try:
-              serializer=OrderRequestsSerializers( data=request.data)
-              if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-              else:
-                    print(request.data)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-          except Exception as e:
-                     return Response({'error': str(e)}, status=500)
+        try:
+            serializer = OrderRequestsSerializers(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print(request.data)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
     elif request.method == 'GET':
         try:
             ordersdata = OrderRequestsModal.objects.all()
@@ -252,32 +260,33 @@ def ServiceBookingRequests(request):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
-        
+
     elif request.method == 'DELETE':
-        request_id=request.GET.get('request_id')
+        request_id = request.GET.get('request_id')
         try:
             OrderRequestsModal.objects.filter(id=request_id).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-@api_view(['GET','PUT','DELETE','POST'])
+
+
+@api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def OrderAprrovals(request):
     if request.method == 'POST':
-          try:
-              serializer=OrderRequestApprovalSerializers(data=request.data)
-              if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-              else:
-                    print(request.data)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-          except Exception as e:
-                     print(e)
-                     return Response({'error': str(e)}, status=500)
+        try:
+            serializer = OrderRequestApprovalSerializers(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print(request.data)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'error': str(e)}, status=500)
 
     elif request.method == 'GET':
-        company_id=request.GET.get('company_id')
+        company_id = request.GET.get('company_id')
         try:
             if company_id:
                 ordersdata = ApprovedOrdersModal.objects.filter(Company_id=company_id)
@@ -292,7 +301,7 @@ def OrderAprrovals(request):
             return Response({'error': str(e)}, status=500)
 
     elif request.method == 'PUT':
-        orderId=request.GET.get('order_id')
+        orderId = request.GET.get('order_id')
         try:
             ApprovedData = ApprovedOrdersModal.objects.get(id=orderId)
         except ApprovedOrdersModal.DoesNotExist:
@@ -305,7 +314,7 @@ def OrderAprrovals(request):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        orderId=request.GET.get('order_id')
+        orderId = request.GET.get('order_id')
         try:
             ApprovedOrdersModal.objects.filter(id=orderId).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

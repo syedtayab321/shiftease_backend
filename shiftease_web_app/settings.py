@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'shiftease_web_app.wsgi.application'
 DATABASES = {
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'shiftease',
+        'NAME': 'houseease',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',  

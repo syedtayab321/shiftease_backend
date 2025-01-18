@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from serviceproviders import serializers as ProviderSerializer
 from Admin import serializers as AdminSerializer
 from rest_framework import status
-
+from django.shortcuts import get_object_or_404
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def ProvidersData(request):
@@ -190,3 +190,46 @@ def RentAdsData(request):
             return Response({'error': 'Rent Ad not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+logger = logging.getLogger(__name__)
+@api_view(['POST'])
+def RentAdsApproval(request):
+    serializer = AdminSerializer.RentAdApprovalSerializer(data=request.data)
+    if serializer.is_valid():
+        email = serializer.validated_data.get('ownerEmail')
+        ad_id = request.data.get('id')
+        status_value = serializer.validated_data.get('requestStatus')
+        print()
+        try:
+            num_updated = AdminModels.RentAd.objects.filter(id=ad_id, ownerEmail=email).update(
+                requestStatus=status_value )
+            
+            if num_updated == 0:
+                logger.warning(f'No RentAd found with ID: {ad_id} and Email: {email}')
+                return Response({'error': 'Rent ad not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            else:
+                subject = 'Rent Ad Approval Status Update'
+                message = f"""
+                         Dear User,
+                         Your rent ad with ID {ad_id} has been {status_value}.
+                         Thank you for using our service.
+                         Best regards,
+                         ShiftEase
+                         """
+                from_email = 'syedhussain4508@gmail.com'
+                to_email = email
+                send_mail(subject, message, from_email, [to_email])
+                
+                return Response({'message': f'Rent ad with ID {ad_id} updated to {status_value} successfully.'},
+                                status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            logger.error(f'Error during Rent Ad approval process: {e}')
+            return Response({'error': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    else:
+        logger.warning(f'Serializer errors: {serializer.errors}')
+        return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
