@@ -8,6 +8,7 @@ class Users(models.Model):
     password = models.CharField(max_length=200)
     users_uid = models.CharField(max_length=1000)
     status = models.CharField(max_length=200, default='Active')
+    verification_code = models.IntegerField(null=True, blank=True, default=None)
 
 
 class RentAd(models.Model):
@@ -52,3 +53,16 @@ class RentAdImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.rent_ad}"
+
+class Complaint(models.Model):
+    user_id = models.IntegerField()
+    user_email = models.EmailField()
+    company_name = models.CharField(max_length=255)
+    company_id = models.IntegerField()
+    company_email = models.EmailField()
+    company_location = models.CharField(max_length=255)
+    complaint_data = models.TextField()
+    complaint_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Complaint {self.id} - {self.company_name} by User {self.user_id}"

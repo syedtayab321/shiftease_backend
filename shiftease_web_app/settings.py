@@ -33,7 +33,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://10.0.2.2',
     'http://192.168.18.2',
     'http://192.168.249.18',
-    'http://192.168.112.18'
+    'http://192.168.112.18',
+    'http://192.168.137.18',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -49,6 +50,8 @@ INSTALLED_APPS = [
     'MessageApp',
     'rest_framework',
     'corsheaders',
+    'TeamPortal',
+    'ForgotPassword',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,18 +88,27 @@ WSGI_APPLICATION = 'shiftease_web_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#    'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'houseease',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',  
+#         'PORT': '3306', 
+#     }
+# }
+
 DATABASES = {
-   'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'houseease',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',  
-        'PORT': '3306', 
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'house_ease',
+            'USER': 'postgres',
+            'PASSWORD': '98230',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 

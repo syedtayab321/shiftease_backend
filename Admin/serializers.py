@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from Admin.models import Users, RentAd, RentAdImage
+from Admin.models import Users, RentAd, RentAdImage,Complaint
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,3 +32,8 @@ class RentAdApprovalSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentAd
         fields = ['id','ownerEmail','requestStatus']
+
+class ComplaintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Complaint
+        fields = '__all__'

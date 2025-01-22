@@ -95,6 +95,7 @@ def ProviderMessages(request):
 @api_view(['POST', 'GET', 'PUT', 'DELETE'])
 def UsersMessages(request):
     if request.method == 'POST':
+        print(request.data)
         message_data = MessageSerializers.UserMessageSerializer(data=request.data)
         if message_data.is_valid():
             message_data.save()

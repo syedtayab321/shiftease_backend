@@ -9,4 +9,5 @@ urlpatterns = [
      path('teamdata/', views.TeamData, name='teamdata'),
      path('serviceBookingRequests/', views.ServiceBookingRequests, name='serviceBookingRequests'),
      path('ApprovedOrders/',views.OrderAprrovals,name='ApprovedOrders'),
+     path('packagePayments/', views.PaymentAPI, name='payment_api'),
     ]

@@ -3,10 +3,10 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ServiceProvidersSerializer, UserProfileSerializer, PackageSerializer, AddTeamSerializer, \
-    OrderRequestsSerializers, OrderRequestApprovalSerializers
-from .models import ServiceProviders, PackagesModel, AddTeamModel, OrderRequestsModal, ApprovedOrdersModal
+    OrderRequestsSerializers, OrderRequestApprovalSerializers,PaymentSerializer
+from .models import ServiceProviders, PackagesModel, AddTeamModel, OrderRequestsModal, ApprovedOrdersModal,Payment
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.views import APIView
 
 @api_view(['POST'])
 def Providersignup(request):
@@ -249,7 +249,6 @@ def ServiceBookingRequests(request):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
-                print(request.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
@@ -320,3 +319,18 @@ def OrderAprrovals(request):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class PaymentAPI(APIView):
+    def get(self, request):
+        payments = Payment.objects.all()
+        serializer = PaymentSerializer(payments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = PaymentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Payment saved successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

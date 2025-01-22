@@ -9,6 +9,7 @@ from serviceproviders import serializers as ProviderSerializer
 from Admin import serializers as AdminSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def ProvidersData(request):
@@ -233,3 +234,19 @@ def RentAdsApproval(request):
         logger.warning(f'Serializer errors: {serializer.errors}')
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ComplaintAPI(APIView):
+    def get(self, request):
+        complaints = AdminModels.Complaint.objects.all()
+        serializer = AdminSerializer.ComplaintSerializer(complaints, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = AdminSerializer.ComplaintSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Complaint submitted successfully!", "data": serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
